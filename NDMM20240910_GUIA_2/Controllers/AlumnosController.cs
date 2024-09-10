@@ -1,82 +1,82 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using NDMM20240910_GUIA_2.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace NDMM20240910_GUIA_2.Controllers
 {
-    public class AlumnosController : Controller
+
+    //Controlador de la api//
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AlumnosController : ControllerBase
+
     {
-        // GET: AlumnosController
-        public ActionResult Index()
+
+        //Listar alumnos//
+
+        static List<Alumno> alumnos = new List<Alumno>();
+
+
+        //Obtener alumnos y retornarlos//
+
+        [HttpGet]
+        public IEnumerable<Alumno> Get()
         {
-            return View();
+            return alumnos;
         }
 
-        // GET: AlumnosController/Details/5
-        public ActionResult Details(int id)
+        //Obtener id//
+
+        [HttpGet("{id}")]
+        public Alumno Get(int id)
         {
-            return View();
+            var alumno = alumnos.FirstOrDefault(a => a.Id == id);
+            return alumno;
         }
 
-        // GET: AlumnosController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        //Agregar alumno //
 
-        // POST: AlumnosController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Post([FromBody] Alumno alumno)
         {
-            try
+            alumnos.Add(alumno);
+            return Ok();
+        }
+
+        //Verificar si el alumno existe por medio del id y si este no existe no retornar nada//
+
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Alumno alumno)
+        {
+            var existingAlumno = alumnos.FirstOrDefault(a => a.Id == id);
+            if (existingAlumno != null)
             {
-                return RedirectToAction(nameof(Index));
+                existingAlumno.Nombre = alumno.Nombre;
+                existingAlumno.Apellido = alumno.Apellido;
+                existingAlumno.Matricula = alumno.Matricula;
+                return Ok();
             }
-            catch
+            else
             {
-                return View();
+                return NotFound();
             }
         }
 
-        // GET: AlumnosController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+        //Eliminar alumno por id// 
 
-        // POST: AlumnosController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
         {
-            try
+            var existingAlumno = alumnos.FirstOrDefault(a => a.Id == id);
+            if (existingAlumno != null)
             {
-                return RedirectToAction(nameof(Index));
+                alumnos.Remove(existingAlumno);
+                return Ok();
             }
-            catch
+            else
             {
-                return View();
-            }
-        }
-
-        // GET: AlumnosController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: AlumnosController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                return NotFound();
             }
         }
     }
